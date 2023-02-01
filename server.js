@@ -88,12 +88,12 @@ app.put('/notes/:id', async (req, res) => {
 
 // Change pw 
 app.put('/settings/:userEmail', async (req, res) => {
-    const {email} = req.params
+    const {userEmail} = req.params
     const {password} = req.body
     const salt = bcrypt.genSaltSync(10)
     const hashedPassword = bcrypt.hashSync(password, salt)
     try {
-        const response = await pool.query(`UPDATE users SET hashed_password=$1 WHERE email=$2`, [hashedPassword, email])
+        const response = await pool.query(`UPDATE users SET hashed_password=$1 WHERE email=$2`, [hashedPassword, userEmail])
         res.json(response);
     } catch (error) {
         res.json({ detail: error.detail })
