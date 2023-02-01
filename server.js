@@ -86,18 +86,18 @@ app.put('/notes/:id', async (req, res) => {
 })
 
 
-// Change email 
-app.put('/settings/:userEmail', async (req, res) => {
-    const {user_email} = req.params
-    const newEmail = req.body
-    try {
-        const response = await pool.query(`UPDATE users SET email=$1 WHERE email=$2`, [newEmail, user_email])
-        const response2 = await pool.query(`UPDATE notes SET user_email=$1 WHERE user_email=$2`, [newEmail, user_email])
-        res.json(response, response2);
-    } catch (error) {
-        res.json({ detail: error })
-    }
-})
+// // Change email 
+// app.put('/settings/:userEmail', async (req, res) => {
+//     const {user_email} = req.params
+//     const newEmail = req.body
+//     try {
+//         const response = await pool.query(`UPDATE users SET email=$1 WHERE email=$2`, [newEmail, user_email])
+//         const response2 = await pool.query(`UPDATE notes SET user_email=$1 WHERE user_email=$2`, [newEmail, user_email])
+//         res.json(response, response2);
+//     } catch (error) {
+//         res.json({ detail: error })
+//     }
+// })
 app.delete('/notes/:id', async (req, res) => {
     const { id } = req.params
     try {
