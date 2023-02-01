@@ -22,11 +22,11 @@ app.get('/usersandnumbers', async (req, res) => {
 })
 
 app.post('/signup', async (req, res) => {
-    const { email, password } = req.body
+    const { email, password, name } = req.body
     const salt = bcrypt.genSaltSync(10)
     const hashedPassword = bcrypt.hashSync(password, salt)
     try {
-        const signed = await pool.query(`INSERT INTO users(email, hashed_password) VALUES($1,$2)`, [email, hashedPassword])
+        const signed = await pool.query(`INSERT INTO users(email, hashed_password, name) VALUES($1,$2, $3)`, [email, hashedPassword, name])
         const token = jwt.sign({ email }, 'secrets', { expiresIn: '1hr' })
         res.json({ email, token })
     } catch (error) {
@@ -45,7 +45,7 @@ app.post('/login', async (req, res) => {
         const success = await bcrypt.compare(password, users.rows[0].hashed_password)
         const token = jwt.sign({ email }, 'secrets', { expiresIn: '1hr' })
         if (success) {
-            res.json({ 'email': users.rows[0].email, token })
+            res.json({ 'email': users.rows[0].email,'name': users.rows[0].name , token })
         } else {
             res.json({ detail: 'Login failed' })
         }
