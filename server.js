@@ -7,7 +7,7 @@ app.use(express.json())
 
 const pool = require('./db')
 const bcrypt = require('bcrypt')
-const {v4: uuidv4} = require('uuid')
+const { v4: uuidv4 } = require('uuid')
 const jwt = require('jsonwebtoken')
 
 
@@ -21,36 +21,36 @@ app.get('/users', async (req, res) => {
     }
 })
 
-app.post('/signup', async(req,res) => {
-    const {email, password} = req.body
+app.post('/signup', async (req, res) => {
+    const { email, password } = req.body
     const salt = bcrypt.genSaltSync(10)
     const hashedPassword = bcrypt.hashSync(password, salt)
     try {
         const signed = await pool.query(`INSERT INTO users(email, hashed_password) VALUES($1,$2)`, [email, hashedPassword])
-        const token = jwt.sign({email}, 'secrets', {expiresIn: '1hr'})
-        res.json({email,token})
+        const token = jwt.sign({ email }, 'secrets', { expiresIn: '1hr' })
+        res.json({ email, token })
     } catch (error) {
-        res.json({detail: error.detail})
+        res.json({ detail: error.detail })
     }
 })
 
 // Login
-app.post('/login', async(req,res) => {
-    const {email, password} = req.body
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body
     try {
         const users = await pool.query(`SELECT * FROM users WHERE email=$1`, [email])
-        if(!users.rows.length){
-            res.json({detail: 'User does not exist!'})
+        if (!users.rows.length) {
+            res.json({ detail: 'User does not exist!' })
         }
         const success = await bcrypt.compare(password, users.rows[0].hashed_password)
-        const token = jwt.sign({email}, 'secrets', {expiresIn: '1hr'})
-        if(success){
-            res.json({'email': users.rows[0].email, token})
-        }else {
-            res.json({detail: 'Login failed'})
+        const token = jwt.sign({ email }, 'secrets', { expiresIn: '1hr' })
+        if (success) {
+            res.json({ 'email': users.rows[0].email, token })
+        } else {
+            res.json({ detail: 'Login failed' })
         }
     } catch (error) {
-        res.json({detail: error.detail})
+        res.json({ detail: error.detail })
     }
 })
 
@@ -68,7 +68,7 @@ app.post('/notes', async (req, res) => {
     const { user_email, title, progress, date, category, content, type } = req.body
     const id = uuidv4()
     try {
-        const newToDo = await pool.query(`INSERT INTO notes(id, user_email, title, progress, date, category, content, type) VALUES($1,$2,$3,$4,$5,$6, $7, $8)`, [id, user_email, title, progress, date,category, content, type])
+        const newToDo = await pool.query(`INSERT INTO notes(id, user_email, title, progress, date, category, content, type) VALUES($1,$2,$3,$4,$5,$6, $7, $8)`, [id, user_email, title, progress, date, category, content, type])
         res.json(newToDo)
     } catch (error) {
         console.log(error)
@@ -78,13 +78,26 @@ app.put('/notes/:id', async (req, res) => {
     const { id } = req.params
     const { user_email, title, progress, date, category, content, type } = req.body
     try {
-        const editTodo = await pool.query(`UPDATE notes SET user_email = $1 , title = $2, progress=$3, date=$4, category=$5, content=$6, type=$7 WHERE id=$8;`, [user_email, title, progress, date,category,content,type, id])
+        const editTodo = await pool.query(`UPDATE notes SET user_email = $1 , title = $2, progress=$3, date=$4, category=$5, content=$6, type=$7 WHERE id=$8;`, [user_email, title, progress, date, category, content, type, id])
         res.json(editTodo)
     } catch (error) {
         console.error(error)
     }
 })
 
+
+// Change email 
+app.put('/settings/:userEmail', async (req, res) => {
+    const {user_email} = req.params
+    const newEmail = req.body
+    try {
+        const response = await pool.query(`UPDATE users SET email=$1 WHERE email=$2`, [newEmail, user_email])
+        const response2 = await pool.query(`UPDATE notes SET user_email=$1 WHERE user_email=$2`, [newEmail, user_email])
+        res.json(response, response2);
+    } catch (error) {
+        res.json({ detail: error })
+    }
+})
 app.delete('/notes/:id', async (req, res) => {
     const { id } = req.params
     try {
