@@ -1,7 +1,6 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
   "scripts": {
     "start": "node server.js"
   },
@@ -16,5 +15,15 @@
     "jsonwebtoken": "^9.0.0",
     "pg": "^8.9.0",
     "uuid": "^9.0.0"
-  }
+  },
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/niklas1531/notes-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/niklas1531/notes-server/issues"
+  },
+  "homepage": "https://github.com/niklas1531/notes-server#readme",
+  "description": ""
 }
