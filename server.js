@@ -88,8 +88,8 @@ app.put('/notes/:id', async (req, res) => {
 
 // Change pw 
 app.put('/settings/:userEmail', async (req, res) => {
-    const {userEmail} = req.params
-    const {password} = req.body
+    const { userEmail } = req.params
+    const { password } = req.body
     const salt = bcrypt.genSaltSync(10)
     const hashedPassword = bcrypt.hashSync(password, salt)
     try {
@@ -106,6 +106,16 @@ app.delete('/notes/:id', async (req, res) => {
         res.json(deleteTodo)
     } catch (error) {
         console.error(error)
+    }
+})
+
+app.delete('/deleteuser/:email', async (req, res) => {
+    const { email } = req.params
+    try {
+        const response = await pool.query(`DELETE FROM users WHERE email=$1`, [email])
+        res.json(response)
+    } catch (error) {
+        console.log(error)
     }
 })
 app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`))
