@@ -12,9 +12,9 @@ const jwt = require('jsonwebtoken')
 
 
 //Get all notes
-app.get('/users', async (req, res) => {
+app.get('/usersandnumbers', async (req, res) => {
     try {
-        const todos = await pool.query(`SELECT * FROM users`)
+        const todos = await pool.query(`SELECT user_email, count(*) FROM notes GROUP BY user_email;`)
         res.json(todos.rows)
     } catch (error) {
         console.log(error)
