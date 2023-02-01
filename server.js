@@ -65,10 +65,10 @@ app.get('/notes/:userEmail', async (req, res) => {
     }
 })
 app.post('/notes', async (req, res) => {
-    const { user_email, title, progress, date, category } = req.body
+    const { user_email, title, progress, date, category, content } = req.body
     const id = uuidv4()
     try {
-        const newToDo = await pool.query(`INSERT INTO notes(id, user_email, title, progress, date, category) VALUES($1,$2,$3,$4,$5,$6)`, [id, user_email, title, progress, date,category])
+        const newToDo = await pool.query(`INSERT INTO notes(id, user_email, title, progress, date, category, content) VALUES($1,$2,$3,$4,$5,$6, $7)`, [id, user_email, title, progress, date,category, content])
         res.json(newToDo)
     } catch (error) {
         console.log(error)
@@ -76,9 +76,9 @@ app.post('/notes', async (req, res) => {
 })
 app.put('/notes/:id', async (req, res) => {
     const { id } = req.params
-    const { user_email, title, progress, date, category } = req.body
+    const { user_email, title, progress, date, category, content } = req.body
     try {
-        const editTodo = await pool.query(`UPDATE notes SET user_email = $1 , title = $2, progress=$3, date=$4, category=$5 WHERE id=$6;`, [user_email, title, progress, date,category, id])
+        const editTodo = await pool.query(`UPDATE notes SET user_email = $1 , title = $2, progress=$3, date=$4, category=$5, content=$6 WHERE id=$7;`, [user_email, title, progress, date,category,content, id])
         res.json(editTodo)
     } catch (error) {
         console.error(error)
